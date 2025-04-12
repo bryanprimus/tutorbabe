@@ -15,7 +15,7 @@ export const sdkApi = createApi({
 export const mainApi = createApi({
 	reducerPath: "mainApi",
 	baseQuery: fetchBaseQuery({
-		baseUrl: `${env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api`,
+		baseUrl: env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
 		prepareHeaders: async (headers) => {
 			const currentUser = auth.currentUser;
 			if (currentUser) {
