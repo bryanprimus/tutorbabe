@@ -1,3 +1,4 @@
+import { AuthListenerProvider } from "@/components/templates/AuthListenerProvider";
 import theme from "@/config/theme";
 import { Providers } from "@/store/Providers";
 import { CssBaseline } from "@mui/material";
@@ -24,10 +25,12 @@ export default function RootLayout({
 		<html lang="en" className={geist.className}>
 			<body>
 				<Providers>
-					<AppRouterCacheProvider>
-						<CssBaseline />
-						<ThemeProvider theme={theme}>{children}</ThemeProvider>
-					</AppRouterCacheProvider>
+					<AuthListenerProvider>
+						<AppRouterCacheProvider>
+							<CssBaseline />
+							<ThemeProvider theme={theme}>{children}</ThemeProvider>
+						</AppRouterCacheProvider>
+					</AuthListenerProvider>
 				</Providers>
 			</body>
 		</html>
