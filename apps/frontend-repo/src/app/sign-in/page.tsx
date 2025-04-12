@@ -1,12 +1,12 @@
 "use client";
 
-import GoogleButton from "@/components/atoms/buttons/GoogleButton";
 import { auth } from "@/config/firebaseConfig";
+import { Alert, Box, Button } from "@mui/material";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import GoogleIcon from "@mui/icons-material/Google";
 import { useState } from "react";
-import styles from "./SignInForm.module.css";
 
-const SignInForm = () => {
+export default function SignInPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -25,17 +25,16 @@ const SignInForm = () => {
 			setIsLoading(false);
 		}
 	};
-
 	return (
-		<div className={styles.signInForm}>
-			<h2 className={styles.formTitle}>Sign In</h2>
-			<div className={styles.formContent}>
-				<GoogleButton onClick={handleGoogleSignIn} />
-				{isLoading && <p>Loading...</p>}
-				{error && <p className={styles.errorMessage}>{error}</p>}
-			</div>
-		</div>
+		<Box gap={2}>
+			<Button
+				onClick={handleGoogleSignIn}
+				loading={isLoading}
+				startIcon={<GoogleIcon />}
+			>
+				Sign in with Google
+			</Button>
+			{error && <Alert severity="error">{error}</Alert>}
+		</Box>
 	);
-};
-
-export default SignInForm;
+}
