@@ -1,5 +1,5 @@
+import SignInForm from "@/components/organisms/auth/SignInForm";
 import Link from "next/link";
-
 import styles from "./index.module.css";
 
 export default function Home() {
@@ -7,8 +7,11 @@ export default function Home() {
 		<main className={styles.main}>
 			<div className={styles.container}>
 				<h1 className={styles.title}>
-					Create <span className={styles.pinkSpan}>T3</span> App
+					Welcome to <span className={styles.pinkSpan}>TutorBabe</span> App
 				</h1>
+
+				<SignInForm />
+
 				<div className={styles.cardRow}>
 					<Link
 						className={styles.card}
