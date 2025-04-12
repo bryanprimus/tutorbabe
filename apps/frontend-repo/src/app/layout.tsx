@@ -1,4 +1,5 @@
 import theme from "@/config/theme";
+import { Providers } from "@/store/Providers";
 import { CssBaseline } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
@@ -22,10 +23,12 @@ export default function RootLayout({
 	return (
 		<html lang="en" className={geist.className}>
 			<body>
-				<AppRouterCacheProvider>
-					<CssBaseline />
-					<ThemeProvider theme={theme}>{children}</ThemeProvider>
-				</AppRouterCacheProvider>
+				<Providers>
+					<AppRouterCacheProvider>
+						<CssBaseline />
+						<ThemeProvider theme={theme}>{children}</ThemeProvider>
+					</AppRouterCacheProvider>
+				</Providers>
 			</body>
 		</html>
 	);
