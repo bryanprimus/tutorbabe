@@ -1,5 +1,5 @@
 "use client";
-import { useSignInWithGoogleMutation } from "@/apis/userApi";
+import { useSignInWithGoogleMutation } from "@/apis/authApi";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ export default function SignInPage() {
 
 	const handleGoogleSignIn = async () => {
 		await signInWithGoogle(undefined).unwrap();
+
 		router.replace("/profile");
 	};
 	return (

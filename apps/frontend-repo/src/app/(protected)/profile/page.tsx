@@ -1,6 +1,7 @@
 "use client";
 
-import { useSignOutMutation } from "@/apis/userApi";
+import { useSignOutMutation } from "@/apis/authApi";
+import { useFetchUserDataQuery } from "@/apis/userApi";
 import type { RootState } from "@/store";
 import { Button, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
@@ -9,6 +10,9 @@ export default function ProfilePage() {
 	const { user } = useSelector((state: RootState) => state.auth);
 
 	const [signOut, { isLoading }] = useSignOutMutation();
+
+	useFetchUserDataQuery();
+
 	return (
 		<>
 			<Typography>Name: {user?.displayName}</Typography>

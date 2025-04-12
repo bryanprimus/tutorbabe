@@ -1,43 +1,30 @@
 import { auth } from "@/config/firebaseConfig";
-import { setUser } from "@/store/authSlice";
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { sdkApi } from "./index";
+import { z } from "zod";
+import { mainApi } from "./index";
 
-export const userApi = sdkApi.injectEndpoints({
+// TODO: Move to shared packages
+export const UserSchema = z.object({
+	id: z.string(),
+	displayName: z.string().nullable().optional(),
+	email: z.string().nullable().optional(),
+	photoURL: z.string().nullable().optional(),
+	phoneNumber: z.string().nullable().optional(),
+	totalAverageWeightRatings: z.number().optional(),
+	numberOfRents: z.number().optional(),
+	recentlyActive: z.number().optional(), // epoch time
+});
+
+type User = z.infer<typeof UserSchema>;
+
+export const userApi = mainApi.injectEndpoints({
 	endpoints: (builder) => ({
-		signInWithGoogle: builder.mutation({
-			queryFn: () => {
-				try {
-					const provider = new GoogleAuthProvider();
-					return { data: signInWithPopup(auth, provider) };
-				} catch (err) {
-					// TODO: Handle error globally
-					// Use neverthrow ?
-					return { error: err };
-				}
-			},
-		}),
-		signOut: builder.mutation({
-			queryFn: () => {
-				try {
-					return { data: signOut(auth) };
-				} catch (err) {
-					// TODO: Handle error globally
-					// Use neverthrow ?
-					return { error: err };
-				}
-			},
-			async onQueryStarted(_, { dispatch, queryFulfilled }) {
-				try {
-					await queryFulfilled;
-					dispatch(setUser(null));
-				} catch {
-					// TODO: Handle error globally
-					// Use neverthrow ?
-				}
-			},
+		// biome-ignore lint/suspicious/noConfusingVoidType: <explanation>
+		fetchUserData: builder.query<User, string | void>({
+			query: (userId = auth.currentUser?.uid) => ({
+				url: `/users/fetch-user-data${userId ? `/${userId}` : ""}`,
+			}),
 		}),
 	}),
 });
 
-export const { useSignInWithGoogleMutation, useSignOutMutation } = userApi;
+export const { useFetchUserDataQuery } = userApi;
