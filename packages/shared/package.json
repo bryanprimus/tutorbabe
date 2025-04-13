@@ -3,7 +3,10 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tsc --watch",
-		"build": "tsc"
+		"build": "tsc",
+		"lint": "biome check .",
+		"check-types": "tsc --noEmit",
+		"format": "biome check --write --unsafe ."
 	},
 	"exports": {
 		".": {
