@@ -1,4 +1,5 @@
 import { auth, db } from "@/config/firebaseConfig";
+import { userRepository } from "@/repository/userCollection";
 
 import { updateUserSchema, userSchema } from "@repo/shared";
 import type { Request, Response } from "express";
@@ -7,31 +8,25 @@ import { z } from "zod";
 
 export const initUserData = async (req: Request, res: Response) => {
 	const userInRequest = req.user;
-	const user = await auth.getUser(userInRequest.uid);
+	const userAuth = await auth.getUser(userInRequest.uid);
+	const userInDb = await userRepository.fetchUserData(userAuth.uid);
 
-	const userDoc = await db.collection("USERS").doc(user.uid).get();
-
-	if (!userDoc.exists) {
-		await db.collection("USERS").doc(user.uid).set({
-			id: user.uid,
-			name: user.displayName,
-			email: user.email,
-			photoURL: user.photoURL,
+	if (!userInDb) {
+		await db.collection("USERS").doc(userAuth.uid).set({
+			id: userAuth.uid,
+			name: userAuth.displayName,
+			email: userAuth.email,
+			photoURL: userAuth.photoURL,
 			createdAt: FieldValue.serverTimestamp(),
 			updated: FieldValue.serverTimestamp(),
 		});
 	}
 
-	const newUserDoc = await db.collection("USERS").doc(user.uid).get();
-
-	const data = userSchema.parse({
-		id: newUserDoc.id,
-		...newUserDoc.data(),
-	});
+	const newUserInDb = await userRepository.fetchUserData(userAuth.uid);
 
 	res.status(200).json({
 		success: true,
-		data,
+		data: userSchema.parse(newUserInDb),
 	});
 };
 
@@ -41,23 +36,18 @@ const fetchUserDataParamsSchema = z.object({
 
 export const fetchUserData = async (req: Request, res: Response) => {
 	const params = fetchUserDataParamsSchema.parse(req.params);
-	const userDoc = await db.collection("USERS").doc(params.userId).get();
+	const userInDb = await userRepository.fetchUserData(params.userId);
 
-	if (!userDoc.exists) {
+	if (!userInDb) {
 		res.status(400).json({
 			success: false,
 			error: { code: "USER_NOT_FOUND", message: "User not found" },
 		});
 	}
 
-	const data = userSchema.parse({
-		id: userDoc.id,
-		...userDoc.data(),
-	});
-
 	res.status(200).json({
 		success: true,
-		data,
+		data: userSchema.parse(userInDb),
 	});
 };
 
@@ -72,16 +62,12 @@ export const updateUserData = async (req: Request, res: Response) => {
 		.pick({ name: true, dateOfBirth: true })
 		.parse(req.body);
 
-	await db.collection("USERS").doc(params.userId).update(body);
+	await userRepository.updateUserData(params.userId, body);
 
-	const userDoc = await db.collection("USERS").doc(params.userId).get();
-	const data = userSchema.parse({
-		id: userDoc.id,
-		...userDoc.data(),
-	});
+	const userInDb = await userRepository.fetchUserData(params.userId);
 
 	res.status(200).json({
 		success: true,
-		data,
+		data: userSchema.parse(userInDb),
 	});
 };
