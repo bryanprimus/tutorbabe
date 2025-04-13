@@ -1,22 +1,6 @@
 import { auth } from "@/config/firebaseConfig";
-import { z } from "zod";
+import { type User, userSchema } from "@repo/shared";
 import { mainApi } from "./index";
-
-// TODO: Move to shared packages
-export const userSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	email: z.string(),
-	photoURL: z.string(),
-	dateOfBirth: z.string().optional(),
-	totalAverageWeightRatings: z.number().optional(),
-	numberOfRents: z.number().optional(),
-	recentlyActive: z.number().optional(),
-	createdAt: z.any(),
-	updatedAt: z.any(),
-});
-
-type User = z.infer<typeof userSchema>;
 
 export type HttpResponse<TData> = {
 	success: boolean;

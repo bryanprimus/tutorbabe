@@ -1,7 +1,7 @@
 "use client";
 
+import { Loading } from "@/components/templates/Loading";
 import type { RootState } from "@/store";
-import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -14,12 +14,11 @@ export default function ProtectedLayout({
 
 	useEffect(() => {
 		if (initialized && !user) {
-			router.replace("/sign-in"); // redirect to login if not authenticated
+			router.replace("/sign-in");
 		}
 	}, [initialized, user, router]);
 
-	if (!initialized) return <CircularProgress />;
-	if (!user) return <CircularProgress />;
+	if (!initialized || !user) return <Loading />;
 
 	return <>{children}</>;
 }

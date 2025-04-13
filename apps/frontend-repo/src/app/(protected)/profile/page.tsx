@@ -1,127 +1,78 @@
 "use client";
 
-import { useSignOutMutation } from "@/apis/authApi";
-import {
-	useFetchUserDataQuery,
-	useUpdateUserDataMutation,
-} from "@/apis/userApi";
-import { Button, Container, Paper, TextField, Typography } from "@mui/material";
-import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
+import { Box, Button, Typography } from "@mui/material";
 
-const updateProfileFormSchema = z.object({
-	name: z.string().min(1),
-	dateOfBirth: z.string(),
-});
+import { useSignOutMutation } from "@/apis/authApi";
+import { useFetchUserDataQuery } from "@/apis/userApi";
+import { CompleteProfileForm } from "@/components/organisms/CompleteProfileForm";
+import { Loading } from "@/components/templates/Loading";
+import LogoutIcon from "@mui/icons-material/Logout";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 export default function ProfilePage() {
-	const [signOut, { isLoading: isLoadingSignOut }] = useSignOutMutation();
 	const userData = useFetchUserDataQuery();
 
-	const [updateUserData, { isLoading: isLoadingUpdateUserData }] =
-		useUpdateUserDataMutation();
+	const [signOut, { isLoading: isLoadingSignOut }] = useSignOutMutation();
 
-	const form = useForm({
-		defaultValues: {
-			name: userData.data?.name ?? "",
-			dateOfBirth: userData.data?.dateOfBirth ?? "",
-		},
-		validators: {
-			onChange: updateProfileFormSchema,
-		},
-		onSubmit: ({ value }) => {
-			updateUserData(value);
-		},
-	});
+	if (userData.isLoading) {
+		return <Loading />;
+	}
 
-	return (
-		<>
-			<Container sx={{ py: 4 }}>
-				<Paper
-					component="form"
-					sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}
-					onSubmit={(evt) => {
-						evt.preventDefault();
-						evt.stopPropagation();
-						form.handleSubmit(evt);
-					}}
-				>
-					<Typography variant="h5" component="h1">
-						Profile
+	if (!userData.data?.name || !userData.data.dateOfBirth) {
+		return (
+			<Box minHeight="100vh" display="grid" sx={{ placeItems: "center" }} p={2}>
+				<Box display="flex" flexDirection="column" gap={4}>
+					<Typography variant="h5" component="h1" textAlign="center">
+						Complete your profile first to Get started
 					</Typography>
-					<form.Field
-						name="name"
-						// biome-ignore lint/correctness/noChildrenProp: <explanation>
-						children={(field) => {
-							return (
-								<TextField
-									label="Name"
-									placeholder="Enter your name"
-									size="small"
-									fullWidth
-									value={field.state.value}
-									onChange={(evt) => field.handleChange(evt.target.value)}
-									helperText={
-										typeof field.state.meta.errors[0] === "string"
-											? field.state.meta.errors[0]
-											: undefined
-									}
-									error={field.state.meta.errors?.length > 0}
-								/>
-							);
-						}}
-					/>
-					<form.Field
-						name="dateOfBirth"
-						// biome-ignore lint/correctness/noChildrenProp: <explanation>
-						children={(field) => {
-							return (
-								<TextField
-									label="Date of Birth"
-									placeholder="YYYY-MM-DD"
-									size="small"
-									fullWidth
-									type="date"
-									slotProps={{
-										inputLabel: {
-											shrink: true,
-										},
-									}}
-									value={field.state.value}
-									onChange={(evt) => field.handleChange(evt.target.value)}
-									helperText={
-										typeof field.state.meta.errors[0] === "string"
-											? field.state.meta.errors[0]
-											: undefined
-									}
-									error={field.state.meta.errors?.length > 0}
-									sx={{ mt: 2 }}
-								/>
-							);
-						}}
-					/>
+					<Typography variant="subtitle1" textAlign="center" mt={-2}>
+						Your profile will help us to provide the best experience for you to
+						show
+					</Typography>
 
-					<Button
-						type="submit"
-						variant="contained"
-						fullWidth
-						sx={{ mt: 2 }}
-						loading={isLoadingUpdateUserData}
-					>
-						Update Profile
-					</Button>
-				</Paper>
+					{!!userData.data && <CompleteProfileForm user={userData.data} />}
+				</Box>
+			</Box>
+		);
+	}
+	return (
+		<Box minHeight="100vh" display="grid" sx={{ placeItems: "center" }} p={2}>
+			<Box display="flex" flexDirection="column" gap={4}>
+				<Box alignSelf="center">
+					<img
+						alt="user avatar"
+						src={userData.data.photoURL}
+						width={80}
+						height={80}
+						style={{ borderRadius: 9999 }}
+					/>
+				</Box>
+				<Typography variant="h5" component="h1" textAlign="center">
+					Welcome {userData.data.name}
+				</Typography>
+				<Typography variant="subtitle1" textAlign="center" mt={-2}>
+					Your Rating:{" "}
+					{userData.data.totalAverageWeightRatings ?? "You have no rating yet"}
+				</Typography>
+				<Typography variant="subtitle1" textAlign="center" mt={-2}>
+					Rents: {userData.data.numberOfRents ?? 0} times
+				</Typography>
+				<Typography variant="subtitle1" textAlign="center" mt={-2}>
+					Last Active:{" "}
+					{dayjs(userData.data.recentlyActive ?? new Date()).fromNow()}
+				</Typography>
 				<Button
 					variant="contained"
 					color="error"
-					onClick={signOut}
+					endIcon={<LogoutIcon />}
 					loading={isLoadingSignOut}
-					fullWidth
-					sx={{ mt: 2 }}
+					onClick={signOut}
 				>
-					Sign Out
+					Logout
 				</Button>
-			</Container>
-		</>
+			</Box>
+		</Box>
 	);
 }
