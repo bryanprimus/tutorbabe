@@ -2,6 +2,19 @@
 
 A centralized monorepo for the Tutorbabe project.
 
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/9f754c67-ac62-42cb-a3a0-65499148dac6" width="100%" alt="home" /></td>
+    <td><img src="https://github.com/user-attachments/assets/e3a7b024-0992-4c10-afb9-fb80c95b5aaa" width="100%" alt="sign-in" /></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/c797a589-d9e5-46cd-8784-291bc1b35453" width="100%" alt="complete-profile" /></td>
+    <td><img src="https://github.com/user-attachments/assets/9550e173-3e58-4ae9-8c22-0340272ec6bb" width="100%" alt="profile" /></td>
+  </tr>
+</table>
+
+
+
 ## Project Structure
 
 This project is organized as a monorepo with the following structure:
